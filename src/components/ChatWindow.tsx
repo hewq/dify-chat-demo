@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import type { Message } from "../types/chat";
 import { ChatMessage } from "./ChatMessage";
 import { EmptyState } from "./EmptyState";
@@ -8,12 +7,24 @@ type ChatWindowProps = {
   loading: boolean;
 };
 
-export function ChatWindow({ messages, loading }: ChatWindowProps) {
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+function hasVisibleAssistantContent(content: string) {
+  return content
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<think>[\s\S]*$/gi, "")
+    .trim().length > 0;
+}
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+export function ChatWindow({ messages, loading }: ChatWindowProps) {
+  const visibleMessages = messages.filter(
+    (message) =>
+      message.role === "user" || hasVisibleAssistantContent(message.content),
+  );
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant");
+  const currentAssistantHasContent = lastAssistantMessage
+    ? hasVisibleAssistantContent(lastAssistantMessage.content)
+    : false;
 
   if (messages.length === 0) {
     return <EmptyState />;
@@ -21,7 +32,7 @@ export function ChatWindow({ messages, loading }: ChatWindowProps) {
 
   return (
     <div className="chat-window">
-      {messages.map((message, index) => (
+      {visibleMessages.map((message, index) => (
         <ChatMessage
           key={index}
           role={message.role}
@@ -29,8 +40,9 @@ export function ChatWindow({ messages, loading }: ChatWindowProps) {
           sources={message.sources}
         />
       ))}
-      {loading && <div className="typing">AI 正在生成回复...</div>}
-      <div ref={bottomRef} />
+      {loading && !currentAssistantHasContent && (
+        <div className="typing">AI 正在生成回复...</div>
+      )}
     </div>
   );
 }
