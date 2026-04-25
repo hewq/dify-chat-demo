@@ -10,23 +10,29 @@ type ChatMessageProps = {
   sources?: Source[];
 };
 
+function stripThinkContent(content: string) {
+  return content
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<think>[\s\S]*$/gi, "")
+    .trim();
+}
+
 export function ChatMessage({ role, content, sources }: ChatMessageProps) {
   const isUser = role === "user";
+  const displayContent = isUser ? content : stripThinkContent(content);
 
   return (
     <div className={`message-row ${isUser ? "message-row-user" : ""}`}>
-      {!isUser && <div className="message-avatar assistant">AI</div>}
       <div className={`message-bubble ${isUser ? "user" : "assistant"}`}>
-        <div className="message-role">{isUser ? "你" : "AI Assistant"}</div>
         {isUser ? (
-          <div className="message-text">{content}</div>
+          <div className="message-text">{displayContent}</div>
         ) : (
           <div className="markdown-body">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
             >
-              {content}
+              {displayContent}
             </ReactMarkdown>
           </div>
         )}
@@ -35,7 +41,6 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
           <SourceList sources={sources} />
         )}
       </div>
-      {isUser && <div className="message-avatar user">你</div>}
     </div>
   );
 }
