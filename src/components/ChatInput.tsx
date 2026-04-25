@@ -31,9 +31,7 @@ export function ChatInput({
         />
 
         <div className="chat-input-meta">
-          <span>
-            面向前端知识问答与代码辅助
-          </span>
+          <span>面向前端知识问答与代码辅助</span>
           <span>Enter 发送</span>
         </div>
 
@@ -43,7 +41,7 @@ export function ChatInput({
           </button>
           <button
             className="primary"
-            onClick={onSend}
+            onClick={() => onSend()}
             disabled={loading || value.trim() === ""}
           >
             {loading ? "回答中..." : "发送消息"}

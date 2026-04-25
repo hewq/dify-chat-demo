@@ -5,16 +5,19 @@ import { EmptyState } from "./EmptyState";
 type ChatWindowProps = {
   messages: Message[];
   loading: boolean;
+  onExampleClick: (question: string) => void;
 };
 
 function hasVisibleAssistantContent(content: string) {
-  return content
-    .replace(/<think>[\s\S]*?<\/think>/gi, "")
-    .replace(/<think>[\s\S]*$/gi, "")
-    .trim().length > 0;
+  return (
+    content
+      .replace(/<think>[\s\S]*?<\/think>/gi, "")
+      .replace(/<think>[\s\S]*$/gi, "")
+      .trim().length > 0
+  );
 }
 
-export function ChatWindow({ messages, loading }: ChatWindowProps) {
+export function ChatWindow({ messages, loading, onExampleClick }: ChatWindowProps) {
   const visibleMessages = messages.filter(
     (message) =>
       message.role === "user" || hasVisibleAssistantContent(message.content),
@@ -27,7 +30,7 @@ export function ChatWindow({ messages, loading }: ChatWindowProps) {
     : false;
 
   if (messages.length === 0) {
-    return <EmptyState />;
+    return <EmptyState onExampleClick={onExampleClick} />;
   }
 
   return (

@@ -1,18 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChatWindow } from "./components/ChatWindow";
 import { ChatInput } from "./components/ChatInput";
 import { sendMessageToDifyStream } from "./api/difyStream";
 import type { Message } from "./types/chat";
 import "./index.css";
+import { loadChatState, saveChatState, clearChatState } from "./utils/storage";
 
 function App() {
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string>();
+  const initialState = loadChatState();
 
-  async function handleSend() {
-    const text = input.trim();
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>(initialState.messages);
+  const [loading, setLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>(
+    initialState.conversationId,
+  );
+
+  useEffect(() => {
+    saveChatState({
+      messages,
+      conversationId,
+    });
+  }, [messages, conversationId]);
+
+  async function handleSend(question?: string) {
+    const text = typeof question === "string" ? question.trim() : input.trim();
 
     if (!text || loading) {
       return;
@@ -103,6 +115,7 @@ function App() {
   function handleClear() {
     setMessages([]);
     setConversationId(undefined);
+    clearChatState();
   }
 
   return (
@@ -113,7 +126,11 @@ function App() {
         <p>基于 Dify + DeepSeek 的前端知识库助手</p>
       </div>
       <main className="app-main">
-        <ChatWindow messages={messages} loading={loading} />
+        <ChatWindow
+          messages={messages}
+          loading={loading}
+          onExampleClick={(question) => handleSend(question)}
+        />
       </main>
 
       <ChatInput
