@@ -1,5 +1,4 @@
-export type ChatMessage = {
-  id: string
+export type Message = {
   role: 'user' | 'assistant'
   content: string
   sources?: Source[]
