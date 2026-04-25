@@ -29,7 +29,7 @@ export function ChatWindow({ messages, loading }: ChatWindowProps) {
           sources={message.sources}
         />
       ))}
-      {loading && <div className="typing">AI 正在思考...</div>}
+      {loading && <div className="typing">AI 正在生成回复...</div>}
       <div ref={bottomRef} />
     </div>
   );

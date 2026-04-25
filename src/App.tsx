@@ -107,11 +107,15 @@ function App() {
 
   return (
     <div className="app-shell">
+      <div className="app-background" />
+
       <header className="app-header">
-        <div>
+        <div className="app-header-copy">
+          <span className="app-badge">AI Workspace</span>
           <h1>Frontend AI Assistant</h1>
           <p>基于 Dify + DeepSeek 的前端知识库助手</p>
         </div>
+        <div className="app-header-status">在线会话</div>
       </header>
 
       <main className="app-main">

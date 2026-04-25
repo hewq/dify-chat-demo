@@ -15,8 +15,9 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
 
   return (
     <div className={`message-row ${isUser ? "message-row-user" : ""}`}>
+      {!isUser && <div className="message-avatar assistant">AI</div>}
       <div className={`message-bubble ${isUser ? "user" : "assistant"}`}>
-        <div className="message-role">{isUser ? "你" : "AI"}</div>
+        <div className="message-role">{isUser ? "你" : "AI Assistant"}</div>
         {isUser ? (
           <div className="message-text">{content}</div>
         ) : (
@@ -34,6 +35,7 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
           <SourceList sources={sources} />
         )}
       </div>
+      {isUser && <div className="message-avatar user">你</div>}
     </div>
   );
 }
