@@ -1,131 +1,89 @@
-# dify-chat-demo
+# Frontend AI Assistant
 
-A chat UI demo built with React, TypeScript, Vite, and Tailwind CSS.
+一个基于 Dify + DeepSeek + React + Express 的 AI 知识库问答应用。
 
-The project now includes a reusable API layer for calling a backend chat endpoint. The page contains an empty state, message list, input box, send button, loading state, and error feedback.
+## 功能
 
-## Features
+- 支持知识库问答
+- 支持多轮对话
+- 支持流式输出
+- 支持 Markdown 渲染
+- 支持代码高亮
+- 支持引用来源展示
+- 通过 Express 代理保护 Dify API Key
 
-- Mobile-first chat layout
-- User and assistant message rendering
-- Empty state and loading state
-- Basic request error feedback
-- Reusable API layer for backend integration
-- Tailwind CSS v4 styling
+## 技术栈
 
-## Tech Stack
-
-- React 19
+- React
 - TypeScript
-- Vite 8
-- Tailwind CSS 4
+- Vite
+- Express
+- Dify
+- DeepSeek
+- React Markdown
+- Highlight.js
 
-## Getting Started
+## 架构
 
-### 1. Install dependencies
+```text
+Browser
+  ↓
+Vite React App
+  ↓
+Express API Proxy
+  ↓
+Dify Chat API
+  ↓
+Knowledge Retrieval + DeepSeek
+```
 
+## 本地启动
+
+### 1. 安装依赖
 ```bash
 npm install
 ```
 
-### 2. Configure environment variables
 
-Create a local env file from the example:
-
+### 2. 配置环境变量
+复制 .env.example 为 .env：
 ```bash
 cp .env.example .env
 ```
 
-On Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env
+然后填写：
+```env
+DIFY_API_KEY=your_dify_app_api_key
+DIFY_API_URL=https://api.dify.ai/v1/chat-messages
 ```
 
-Environment variables:
-
-- `VITE_API_BASE_URL`: backend base URL, default is `https://api.dify.ai/v1`
-- `VITE_CHAT_API_PATH`: chat endpoint path, default is `/chat-messages`
-- `VITE_API_KEY`: optional bearer token, sent as `Authorization: Bearer <token>`
-- `VITE_DIFY_USER`: Dify `user` field used to identify the current end user
-
-### 3. Start development server
-
+### 3. 启动项目
 ```bash
-npm run dev
+npm run dev:all
+```
+前端地址：
+```
+http://localhost:5173
+```
+后端代理：
+```
+http://localhost:3001
 ```
 
-### 4. Build for production
+## 核心流程
+1. 用户在前端输入问题
+2. 前端请求 `/api/chat/stream`
+3. Express 服务端携带 Dify API Key 调用 Dify
+4. Dify 执行知识库检索和模型回答
+5. 服务端将流式响应转发给前端
+6. 前端逐步渲染 AI 回答
+7. 回答完成后展示引用来源
 
-```bash
-npm run build
-```
-
-## API Contract
-
-The frontend sends a `POST` request to the configured chat endpoint:
-
-```json
-{
-  "inputs": {
-    "history": [
-      { "role": "user", "content": "Hello" }
-    ]
-  },
-  "query": "Hello",
-  "response_mode": "blocking",
-  "conversation_id": "",
-  "user": "demo-user"
-}
-```
-
-The frontend accepts several common response formats and extracts the reply from one of these fields:
-
-- `answer`
-- `reply`
-- `message`
-- `data.answer`
-- `data.reply`
-- `choices[0].message.content`
-- `choices[0].text`
-
-Recommended backend response:
-
-```json
-{
-  "conversation_id": "conversation-id",
-  "answer": "Hi, how can I help you?"
-}
-```
-
-## Project Structure
-
-```text
-src/
-  api/
-    chat.ts        # Chat request wrapper
-  types/
-    chat.ts        # Shared message types
-  App.tsx          # Chat page UI and state
-  index.css        # Tailwind import and global styles
-  main.tsx         # App entry
-```
-
-## Scripts
-
-- `npm run dev`: start local development
-- `npm run build`: type-check and build for production
-- `npm run preview`: preview production build
-- `npm run lint`: run ESLint
-
-## Next Steps
-
-- Connect to Dify Chat API or your own backend
-- Add streaming responses
-- Add conversation persistence
-- Add retry and network timeout handling
-- Add authentication if needed
-
-## License
-
-MIT
+## 后续计划
+- 支持会话列表
+- 支持历史记录持久化
+- 支持用户登录
+- 支持文件上传
+- 支持知识库管理
+- 支持回答反馈
+- 支持前端监控和错误上报

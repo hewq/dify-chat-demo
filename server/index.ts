@@ -44,7 +44,7 @@ app.post("/api/chat", async (req, res) => {
       const errorText = await difyResponse.text();
       return res.status(difyResponse.status).json({
         error: "Dify API request failed",
-        detail: errorText,
+        detail: extractDifyErrorMessage(errorText),
       });
     }
 
@@ -90,7 +90,7 @@ app.post("/api/chat/stream", async (req, res) => {
       const errorText = await difyResponse.text();
       return res.status(difyResponse.status).json({
         error: "Dify API stream request failed",
-        detail: errorText,
+        detail: extractDifyErrorMessage(errorText),
       });
     }
 
@@ -121,3 +121,29 @@ app.post("/api/chat/stream", async (req, res) => {
 app.listen(3001, () => {
   console.log("API server running at http://localhost:3001");
 });
+
+function extractDifyErrorMessage(errorText: string) {
+  if (!errorText) {
+    return "Unknown Dify API error.";
+  }
+
+  try {
+    const data = JSON.parse(errorText) as Record<string, unknown>;
+
+    if (typeof data.message === "string" && data.message.trim()) {
+      return data.message;
+    }
+
+    if (typeof data.detail === "string" && data.detail.trim()) {
+      return data.detail;
+    }
+
+    if (typeof data.error === "string" && data.error.trim()) {
+      return data.error;
+    }
+  } catch {
+    return errorText;
+  }
+
+  return errorText;
+}

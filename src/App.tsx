@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { ChatMessages } from "./components/ChatMessages";
 import { sendMessageToDifyStream } from "./api/difyStream";
 import type { ChatMessage } from "./types/chat";
 
@@ -23,7 +24,11 @@ function App() {
     const content = input.trim();
     if (!content || isLoading) return;
 
-    const nextMessages = [...messages, createMessage("user", content), createMessage("assistant", "")];
+    const nextMessages = [
+      ...messages,
+      createMessage("user", content),
+      createMessage("assistant", ""),
+    ];
 
     setMessages(nextMessages);
     setInput("");
@@ -49,11 +54,7 @@ function App() {
             return next;
           });
         },
-        onConversationId: (id) => {
-          setConversationId(id);
-        },
-        onError: (error) => {
-          console.error(error);
+        onSources: (sources) => {
           setMessages((prev) => {
             const next = [...prev];
             const current = next[assistantMessageIndex];
@@ -61,7 +62,33 @@ function App() {
             if (current) {
               next[assistantMessageIndex] = {
                 ...current,
-                content: "请求失败，请稍后重试。",
+                sources: sources.map((source) => ({
+                  datasetName: source.dataset_name,
+                  documentName: source.document_name,
+                  content: source.content,
+                })),
+              };
+            }
+
+            return next;
+          });
+        },
+        onConversationId: (id) => {
+          setConversationId(id);
+        },
+        onError: (requestError) => {
+          console.error(requestError);
+          const message = getErrorMessage(requestError);
+          setError(message);
+
+          setMessages((prev) => {
+            const next = [...prev];
+            const current = next[assistantMessageIndex];
+
+            if (current) {
+              next[assistantMessageIndex] = {
+                ...current,
+                content: message,
               };
             }
 
@@ -72,8 +99,11 @@ function App() {
           setIsLoading(false);
         },
       });
-    } catch (error) {
-      console.error(error);
+    } catch (requestError) {
+      console.error(requestError);
+      const message = getErrorMessage(requestError);
+      setError(message);
+
       setMessages((prev) => {
         const next = [...prev];
         const current = next[assistantMessageIndex];
@@ -81,7 +111,7 @@ function App() {
         if (current) {
           next[assistantMessageIndex] = {
             ...current,
-            content: "请求失败，请稍后重试。",
+            content: message,
           };
         }
 
@@ -129,34 +159,13 @@ function App() {
           ) : (
             <>
               {messages.map((message) => (
-                <article
+                <ChatMessages
                   key={message.id}
-                  className={`flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-7 shadow-sm sm:text-[15px] ${
-                      message.role === "user"
-                        ? "rounded-br-lg bg-blue-600 text-white"
-                        : "rounded-bl-lg border border-slate-200/80 bg-white text-slate-700"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </article>
+                  role={message.role}
+                  content={message.content}
+                  sources={message.sources}
+                />
               ))}
-              {isLoading ? (
-                <article className="flex justify-start">
-                  <div className="rounded-3xl rounded-bl-lg border border-slate-200/80 bg-white px-4 py-3 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-300 [animation-delay:-0.3s]" />
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-300 [animation-delay:-0.15s]" />
-                      <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-300" />
-                    </div>
-                  </div>
-                </article>
-              ) : null}
             </>
           )}
         </section>
@@ -216,6 +225,14 @@ function createMessageId() {
   }
 
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  return "Request failed. Please try again later.";
 }
 
 function RobotIcon() {
