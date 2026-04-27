@@ -242,6 +242,21 @@ function App() {
     );
   }
 
+  function handleRenameSession(sessionId: string, title: string) {
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === sessionId
+          ? {
+              ...session,
+              title,
+              isTitleManuallyEdited: true,
+              updatedAt: Date.now(),
+            }
+          : session,
+      ),
+    );
+  }
+
   return (
     <div className="app-shell">
       <div className="app-background" />
@@ -252,6 +267,7 @@ function App() {
         onNewSession={handleNewSession}
         onSelectSession={handleSelectSession}
         onDeleteSession={handleDeleteSession}
+        onRenameSession={handleRenameSession}
       />
 
       <div className="app-stage">

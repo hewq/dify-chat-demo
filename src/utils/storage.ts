@@ -19,9 +19,7 @@ function generateSessionId() {
     bytes[6] = (bytes[6] & 0x0f) | 0x40;
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
 
-    const hex = Array.from(bytes, (byte) =>
-      byte.toString(16).padStart(2, "0"),
-    );
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
 
     return [
       hex.slice(0, 4).join(""),
@@ -55,10 +53,15 @@ export function createEmptySession(): ChatSession {
     conversationId: undefined,
     createdAt: now,
     updatedAt: now,
+    isTitleManuallyEdited: false,
   };
 }
 
 export function updateSessionTitle(session: ChatSession): ChatSession {
+  if (session.isTitleManuallyEdited) {
+    return session;
+  }
+
   return {
     ...session,
     title: createSessionTitle(session.messages),

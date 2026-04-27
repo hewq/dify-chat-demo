@@ -75,21 +75,23 @@ textarea:disabled {
   left: 24px;
   bottom: 24px;
   width: 296px;
-  padding: 18px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.72);
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(245, 249, 255, 0.76)),
+    linear-gradient(180deg, rgba(41, 98, 255, 0.08), transparent 28%);
   backdrop-filter: blur(18px);
   box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    0 28px 70px rgba(15, 23, 42, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
 }
 
 .sidebar-header {
-  padding: 10px 10px 2px;
+  padding: 12px 10px 4px;
 }
 
 .sidebar-kicker,
@@ -108,8 +110,8 @@ textarea:disabled {
 }
 
 .sidebar-header h2 {
-  margin: 14px 0 8px;
-  font-size: 30px;
+  margin: 16px 0 10px;
+  font-size: 32px;
   line-height: 1.05;
   letter-spacing: -0.05em;
 }
@@ -124,8 +126,8 @@ textarea:disabled {
 .new-chat-button {
   width: 100%;
   border: 0;
-  border-radius: 20px;
-  padding: 14px 16px;
+  border-radius: 22px;
+  padding: 15px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -141,8 +143,8 @@ textarea:disabled {
 }
 
 .new-chat-icon {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -152,12 +154,78 @@ textarea:disabled {
   line-height: 1;
 }
 
+.session-search-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.session-search-icon {
+  position: absolute;
+  left: 16px;
+  color: #75859a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.session-search {
+  width: 100%;
+  height: 46px;
+  border: 1px solid rgba(199, 211, 227, 0.95);
+  border-radius: 16px;
+  background: rgba(249, 251, 255, 0.92);
+  padding: 0 16px 0 42px;
+  color: #122033;
+  outline: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.session-search::placeholder {
+  color: #7c8ca1;
+}
+
+.session-search:focus {
+  border-color: rgba(41, 98, 255, 0.35);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.1);
+}
+
+.session-list-header {
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #627389;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.session-list-header strong {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2154d5;
+  font-size: 12px;
+}
+
 .session-list {
   min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   padding-right: 4px;
 }
 
@@ -171,35 +239,50 @@ textarea:disabled {
 }
 
 .session-item {
+  position: relative;
   display: flex;
   align-items: stretch;
-  gap: 8px;
-  padding: 8px;
+  gap: 10px;
+  padding: 10px;
   border: 1px solid rgba(211, 221, 234, 0.92);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 250, 255, 0.84));
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
 }
 
 .session-item:hover {
   transform: translateY(-1px);
   border-color: rgba(151, 177, 226, 0.95);
-  background: rgba(255, 255, 255, 0.92);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 252, 255, 0.9));
 }
 
 .session-item.active {
   border-color: rgba(41, 98, 255, 0.35);
   background:
-    linear-gradient(135deg, rgba(41, 98, 255, 0.1), rgba(18, 71, 208, 0.04)),
-    rgba(255, 255, 255, 0.92);
-  box-shadow: 0 16px 30px rgba(41, 98, 255, 0.08);
+    linear-gradient(135deg, rgba(41, 98, 255, 0.12), rgba(18, 71, 208, 0.04)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.92));
+  box-shadow: 0 16px 32px rgba(41, 98, 255, 0.08);
+}
+
+.session-accent {
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(41, 98, 255, 0.1), rgba(41, 98, 255, 0));
+  flex-shrink: 0;
+}
+
+.session-item.active .session-accent {
+  background: linear-gradient(180deg, #2962ff, rgba(41, 98, 255, 0.12));
 }
 
 .session-title {
   flex: 1;
   min-width: 0;
   border: 0;
-  padding: 8px 10px;
+  padding: 10px 2px 10px 0;
   background: transparent;
   text-align: left;
   display: flex;
@@ -223,19 +306,48 @@ textarea:disabled {
 }
 
 .session-delete {
-  width: 38px;
+  width: 40px;
   flex-shrink: 0;
   border: 0;
-  border-radius: 14px;
-  background: rgba(236, 241, 248, 0.95);
+  border-radius: 16px;
+  background: rgba(238, 243, 250, 0.95);
   color: #55667c;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1;
+  align-self: center;
+  opacity: 0.88;
 }
 
 .session-delete:hover {
   background: rgba(255, 228, 230, 0.96);
   color: #c24156;
+}
+
+.session-edit-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(41, 98, 255, 0.18);
+  border-radius: 14px;
+  padding: 12px 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #122033;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.session-edit-input:focus {
+  border-color: rgba(41, 98, 255, 0.32);
+  box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.08);
+}
+
+.session-empty {
+  padding: 18px 16px;
+  border: 1px dashed rgba(186, 198, 214, 0.9);
+  border-radius: 20px;
+  background: rgba(249, 251, 255, 0.72);
+  color: #74859a;
+  font-size: 14px;
+  text-align: center;
 }
 
 .app-stage {
@@ -671,6 +783,7 @@ textarea:disabled {
 
   .sidebar {
     padding: 14px;
+    border-radius: 28px;
   }
 
   .sidebar-header h2 {

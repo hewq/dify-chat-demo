@@ -16,10 +16,11 @@ export type Source = {
 };
 
 export type ChatSession = {
-  id: string;
-  title: string;
-  messages: Message[];
-  conversationId?: string;
-  createdAt: number;
-  updatedAt: number;
-};
+  id: string
+  title: string
+  messages: Message[]
+  conversationId?: string
+  createdAt: number
+  updatedAt: number
+  isTitleManuallyEdited?: boolean
+}
