@@ -18,13 +18,14 @@ export function EmptyState({ onExampleClick }: EmptyStateProps) {
 
         <div className="example-list">
           {examples.map((example) => (
-            <div
+            <button
               className="example-card"
               key={example}
               onClick={() => onExampleClick(example)}
             >
+              <span className="example-label">示例问题</span>
               <strong>{example}</strong>
-            </div>
+            </button>
           ))}
         </div>
       </div>

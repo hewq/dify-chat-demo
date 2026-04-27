@@ -42,17 +42,11 @@ export function ChatInput({
             清空会话
           </button>
           {loading ? (
-            <button
-              className="primary"
-              onClick={() => onStop()}
-            >
+            <button className="primary" onClick={() => onStop()}>
               停止生成
             </button>
           ) : (
-            <button
-              className="primary"
-              onClick={() => onSend()}
-            >
+            <button className="primary" onClick={() => onSend()}>
               发送消息
             </button>
           )}

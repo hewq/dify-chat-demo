@@ -17,7 +17,11 @@ function hasVisibleAssistantContent(content: string) {
   );
 }
 
-export function ChatWindow({ messages, loading, onExampleClick }: ChatWindowProps) {
+export function ChatWindow({
+  messages,
+  loading,
+  onExampleClick,
+}: ChatWindowProps) {
   const visibleMessages = messages.filter(
     (message) =>
       message.role === "user" || hasVisibleAssistantContent(message.content),

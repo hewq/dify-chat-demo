@@ -1,29 +1,71 @@
 import { useState, useEffect, useRef } from "react";
 import { ChatWindow } from "./components/ChatWindow";
 import { ChatInput } from "./components/ChatInput";
+import { Sidebar } from "./components/Sidebar";
 import { sendMessageToDifyStream } from "./api/difyStream";
-import type { Message } from "./types/chat";
+import type { Message, ChatSession } from "./types/chat";
 import "./index.css";
-import { loadChatState, saveChatState, clearChatState } from "./utils/storage";
+import {
+  createEmptySession,
+  loadChatState,
+  saveChatState,
+  updateSessionTitle,
+} from "./utils/storage";
 
 function App() {
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const initialState = loadChatState();
 
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>(initialState.messages);
-  const [loading, setLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string | undefined>(
-    initialState.conversationId,
+  const [sessions, setSessions] = useState<ChatSession[]>(
+    initialState.sessions,
   );
+  const [activeSessionId, setActiveSessionId] = useState<string | undefined>(
+    initialState.activeSessionId,
+  );
+  const activeSession =
+    sessions.find((session) => session.id === activeSessionId) || sessions[0];
+
+  const messages = activeSession?.messages || [];
+  const conversationId = activeSession?.conversationId;
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     saveChatState({
-      messages,
-      conversationId,
+      sessions,
+      activeSessionId,
     });
-  }, [messages, conversationId]);
+  }, [sessions, activeSessionId]);
+
+  function updateActiveSession(updater: (session: ChatSession) => ChatSession) {
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === activeSessionId ? updater(session) : session,
+      ),
+    );
+  }
+
+  function setActiveMessages(updater: (messages: Message[]) => Message[]) {
+    updateActiveSession((session) => {
+      const nextMessages = updater(session.messages);
+
+      return updateSessionTitle({
+        ...session,
+        messages: nextMessages,
+        updatedAt: Date.now(),
+      });
+    });
+  }
+
+  function setActiveConversationId(conversationId: string | undefined) {
+    updateActiveSession((session) => ({
+      ...session,
+      conversationId,
+      updatedAt: Date.now(),
+    }));
+  }
 
   async function handleSend(question?: string) {
     const text = typeof question === "string" ? question.trim() : input.trim();
@@ -37,7 +79,7 @@ function App() {
 
     const assistantMessageIndex = messages.length + 1;
 
-    setMessages((prev) => [
+    setActiveMessages((prev) => [
       ...prev,
       {
         role: "user",
@@ -57,7 +99,7 @@ function App() {
         conversationId,
         {
           onMessage: (chunk) => {
-            setMessages((prev) => {
+            setActiveMessages((prev) => {
               const next = [...prev];
               const current = next[assistantMessageIndex];
 
@@ -71,9 +113,9 @@ function App() {
               return next;
             });
           },
-          onConversationId: (id) => setConversationId(id),
+          onConversationId: (id) => setActiveConversationId(id),
           onSources: (sources) => {
-            setMessages((prev) => {
+            setActiveMessages((prev) => {
               const next = [...prev];
               const current = next[assistantMessageIndex];
 
@@ -96,6 +138,7 @@ function App() {
           },
           onDone: () => {
             setLoading(false);
+            abortControllerRef.current = null;
           },
         },
         abortController.signal,
@@ -107,7 +150,7 @@ function App() {
 
       console.error(error);
 
-      setMessages((prev) => {
+      setActiveMessages((prev) => {
         const next = [...prev];
         const current = next[assistantMessageIndex];
 
@@ -134,7 +177,7 @@ function App() {
     abortControllerRef.current = null;
     setLoading(false);
 
-    setMessages((prev) => {
+    setActiveMessages((prev) => {
       const next = [...prev];
       const last = next[next.length - 1];
 
@@ -156,35 +199,85 @@ function App() {
     });
   }
 
+  function handleNewSession() {
+    const session = createEmptySession();
+
+    setSessions((prev) => [session, ...prev]);
+    setActiveSessionId(session.id);
+  }
+
+  function handleSelectSession(sessionId: string) {
+    if (loading) return;
+    setActiveSessionId(sessionId);
+  }
+
+  function handleDeleteSession(sessionId: string) {
+    if (loading) return;
+
+    setSessions((prev) => {
+      const next = prev.filter((session) => session.id !== sessionId);
+
+      if (next.length === 0) {
+        const session = createEmptySession();
+        setActiveSessionId(session.id);
+        return [session];
+      }
+
+      if (sessionId === activeSessionId) {
+        setActiveSessionId(next[0].id);
+      }
+
+      return next;
+    });
+  }
+
   function handleClear() {
-    setMessages([]);
-    setConversationId(undefined);
-    clearChatState();
+    updateActiveSession((session) =>
+      updateSessionTitle({
+        ...session,
+        messages: [],
+        conversationId: undefined,
+        updatedAt: Date.now(),
+      }),
+    );
   }
 
   return (
     <div className="app-shell">
       <div className="app-background" />
-      <div className="app-header-copy">
-        <h1>Frontend AI Assistant</h1>
-        <p>基于 Dify + DeepSeek 的前端知识库助手</p>
-      </div>
-      <main className="app-main">
-        <ChatWindow
-          messages={messages}
-          loading={loading}
-          onExampleClick={(question) => handleSend(question)}
-        />
-      </main>
 
-      <ChatInput
-        value={input}
-        loading={loading}
-        onChange={setInput}
-        onSend={handleSend}
-        onClear={handleClear}
-        onStop={handleStop}
+      <Sidebar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onNewSession={handleNewSession}
+        onSelectSession={handleSelectSession}
+        onDeleteSession={handleDeleteSession}
       />
+
+      <div className="app-stage">
+        <header className="app-header">
+          <span className="app-badge">AI Workspace</span>
+          <h1>Frontend AI Assistant</h1>
+          <p>基于 Dify + DeepSeek 的前端知识库助手</p>
+        </header>
+
+        <main className="app-main">
+          <ChatWindow
+            messages={messages}
+            loading={loading}
+            onExampleClick={(question) => handleSend(question)}
+          />
+        </main>
+
+        <ChatInput
+          value={input}
+          loading={loading}
+          onChange={setInput}
+          onSend={handleSend}
+          onClear={handleClear}
+          onStop={handleStop}
+        />
+      </div>
     </div>
   );
 }
