@@ -400,7 +400,7 @@ textarea:disabled {
 .chat-input-bar {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  bottom: 0;
   transform: translateX(-50%);
   width: min(1120px, 100%);
   padding: 0 24px;

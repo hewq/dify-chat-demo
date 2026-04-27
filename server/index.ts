@@ -71,6 +71,22 @@ app.post("/api/chat/stream", async (req, res) => {
       return res.status(400).json({ error: "message is required" });
     }
 
+    const controller = new AbortController();
+
+    req.on("aborted", () => {
+      controller.abort();
+    });
+
+    res.on("close", () => {
+      if (!res.writableEnded) {
+        controller.abort();
+      }
+    });
+
+    res.on("finish", () => {
+      controller.abort();
+    });
+
     const difyResponse = await fetch(DIFY_API_URL, {
       method: "POST",
       headers: {
@@ -84,6 +100,7 @@ app.post("/api/chat/stream", async (req, res) => {
         conversation_id: conversationId || "",
         user: "vite-demo-user",
       }),
+      signal: controller.signal,
     });
 
     if (!difyResponse.ok || !difyResponse.body) {
@@ -111,10 +128,22 @@ app.post("/api/chat/stream", async (req, res) => {
 
     res.end();
   } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      if (!res.headersSent) {
+        res.status(499).json({
+          error: "Client closed request",
+        });
+      }
+      return;
+    }
+
     console.error(error);
-    res.status(500).json({
-      error: "Internal server error",
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: "Internal server error",
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 });
 

@@ -16,6 +16,7 @@ export async function sendMessageToDifyStream(
   message: string,
   conversationId: string | undefined,
   callbacks: StreamCallbacks,
+  signal?: AbortSignal,
 ) {
   const response = await fetch("/api/chat/stream", {
     method: "POST",
@@ -26,6 +27,7 @@ export async function sendMessageToDifyStream(
       message,
       conversationId,
     }),
+    signal,
   });
 
   if (!response.ok) {
@@ -41,6 +43,12 @@ export async function sendMessageToDifyStream(
   let buffer = "";
 
   while (true) {
+    if (signal?.aborted) {
+      await reader.cancel();
+      callbacks.onDone?.();
+      return;
+    }
+
     const { done, value } = await reader.read();
 
     if (done) {

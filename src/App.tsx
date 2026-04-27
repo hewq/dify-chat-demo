@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChatWindow } from "./components/ChatWindow";
 import { ChatInput } from "./components/ChatInput";
 import { sendMessageToDifyStream } from "./api/difyStream";
@@ -15,6 +15,8 @@ function App() {
   const [conversationId, setConversationId] = useState<string | undefined>(
     initialState.conversationId,
   );
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     saveChatState({
@@ -48,50 +50,61 @@ function App() {
     ]);
 
     try {
-      await sendMessageToDifyStream(text, conversationId, {
-        onMessage: (chunk) => {
-          setMessages((prev) => {
-            const next = [...prev];
-            const current = next[assistantMessageIndex];
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+      await sendMessageToDifyStream(
+        text,
+        conversationId,
+        {
+          onMessage: (chunk) => {
+            setMessages((prev) => {
+              const next = [...prev];
+              const current = next[assistantMessageIndex];
 
-            if (current) {
-              next[assistantMessageIndex] = {
-                ...current,
-                content: current.content + chunk,
-              };
-            }
+              if (current) {
+                next[assistantMessageIndex] = {
+                  ...current,
+                  content: current.content + chunk,
+                };
+              }
 
-            return next;
-          });
-        },
-        onConversationId: (id) => setConversationId(id),
-        onSources: (sources) => {
-          setMessages((prev) => {
-            const next = [...prev];
-            const current = next[assistantMessageIndex];
+              return next;
+            });
+          },
+          onConversationId: (id) => setConversationId(id),
+          onSources: (sources) => {
+            setMessages((prev) => {
+              const next = [...prev];
+              const current = next[assistantMessageIndex];
 
-            if (current) {
-              next[assistantMessageIndex] = {
-                ...current,
-                sources: sources.map((source) => ({
-                  datasetName: source.dataset_name,
-                  documentName: source.document_name,
-                  content: source.content,
-                })),
-              };
-            }
+              if (current) {
+                next[assistantMessageIndex] = {
+                  ...current,
+                  sources: sources.map((source) => ({
+                    datasetName: source.dataset_name,
+                    documentName: source.document_name,
+                    content: source.content,
+                  })),
+                };
+              }
 
-            return next;
-          });
+              return next;
+            });
+          },
+          onError: (error) => {
+            console.error(error);
+          },
+          onDone: () => {
+            setLoading(false);
+          },
         },
-        onError: (error) => {
-          console.error(error);
-        },
-        onDone: () => {
-          setLoading(false);
-        },
-      });
+        abortController.signal,
+      );
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
       console.error(error);
 
       setMessages((prev) => {
@@ -101,7 +114,10 @@ function App() {
         if (current) {
           next[assistantMessageIndex] = {
             ...current,
-            content: "请求失败，请稍后重试。",
+            content:
+              error instanceof Error
+                ? `请求失败：${error.message}`
+                : "请求失败，请稍后重试。",
           };
         }
 
@@ -109,7 +125,35 @@ function App() {
       });
 
       setLoading(false);
+      abortControllerRef.current = null;
     }
+  }
+
+  function handleStop() {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setLoading(false);
+
+    setMessages((prev) => {
+      const next = [...prev];
+      const last = next[next.length - 1];
+
+      if (last?.role === "assistant" && last.content.trim()) {
+        next[next.length - 1] = {
+          ...last,
+          content: `${last.content}\n\n_已停止生成_`,
+        };
+      }
+
+      if (last?.role === "assistant" && !last.content.trim()) {
+        next[next.length - 1] = {
+          ...last,
+          content: "_已停止生成_",
+        };
+      }
+
+      return next;
+    });
   }
 
   function handleClear() {
@@ -139,6 +183,7 @@ function App() {
         onChange={setInput}
         onSend={handleSend}
         onClear={handleClear}
+        onStop={handleStop}
       />
     </div>
   );

@@ -4,6 +4,7 @@ type ChatInputProps = {
   onChange: (value: string) => void;
   onSend: () => void;
   onClear: () => void;
+  onStop: () => void;
 };
 
 export function ChatInput({
@@ -12,6 +13,7 @@ export function ChatInput({
   onChange,
   onSend,
   onClear,
+  onStop,
 }: ChatInputProps) {
   return (
     <div className="chat-input-bar">
@@ -39,13 +41,21 @@ export function ChatInput({
           <button className="secondary" onClick={onClear} disabled={loading}>
             清空会话
           </button>
-          <button
-            className="primary"
-            onClick={() => onSend()}
-            disabled={loading || value.trim() === ""}
-          >
-            {loading ? "回答中..." : "发送消息"}
-          </button>
+          {loading ? (
+            <button
+              className="primary"
+              onClick={() => onStop()}
+            >
+              停止生成
+            </button>
+          ) : (
+            <button
+              className="primary"
+              onClick={() => onSend()}
+            >
+              发送消息
+            </button>
+          )}
         </div>
       </div>
     </div>
