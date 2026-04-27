@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatWindow } from "./components/ChatWindow";
 import { ChatInput } from "./components/ChatInput";
 import { Sidebar } from "./components/Sidebar";
 import { sendMessageToDifyStream } from "./api/difyStream";
-import type { Message, ChatSession } from "./types/chat";
+import type { ChatSession, Message } from "./types/chat";
 import "./index.css";
 import {
   createEmptySession,
@@ -18,9 +18,7 @@ function App() {
 
   const initialState = loadChatState();
 
-  const [sessions, setSessions] = useState<ChatSession[]>(
-    initialState.sessions,
-  );
+  const [sessions, setSessions] = useState<ChatSession[]>(initialState.sessions);
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>(
     initialState.activeSessionId,
   );
@@ -59,10 +57,10 @@ function App() {
     });
   }
 
-  function setActiveConversationId(conversationId: string | undefined) {
+  function setActiveConversationId(nextConversationId: string | undefined) {
     updateActiveSession((session) => ({
       ...session,
-      conversationId,
+      conversationId: nextConversationId,
       updatedAt: Date.now(),
     }));
   }
@@ -94,6 +92,7 @@ function App() {
     try {
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
+
       await sendMessageToDifyStream(
         text,
         conversationId,
@@ -201,7 +200,6 @@ function App() {
 
   function handleNewSession() {
     const session = createEmptySession();
-
     setSessions((prev) => [session, ...prev]);
     setActiveSessionId(session.id);
   }
@@ -259,8 +257,6 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="app-background" />
-
       <Sidebar
         sessions={sessions}
         activeSessionId={activeSessionId}
@@ -272,9 +268,11 @@ function App() {
 
       <div className="app-stage">
         <header className="app-header">
-          <span className="app-badge">AI Workspace</span>
-          <h1>Frontend AI Assistant</h1>
-          <p>基于 Dify + DeepSeek 的前端知识库助手</p>
+          <div className="app-header-title">
+            <h1>Frontend AI Assistant</h1>
+            <span className="app-header-divider" />
+            <p>Based on Dify + DeepSeek</p>
+          </div>
         </header>
 
         <main className="app-main">

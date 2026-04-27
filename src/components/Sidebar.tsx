@@ -37,7 +37,6 @@ export function Sidebar({
     return sessions
       .filter((session) => {
         if (!normalizedKeyword) return true;
-
         return session.title.toLowerCase().includes(normalizedKeyword);
       })
       .sort((a, b) => b.updatedAt - a.updatedAt);
@@ -65,14 +64,15 @@ export function Sidebar({
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-header">
-        <span className="sidebar-kicker">Workspace</span>
-        <h2>会话列表</h2>
-        <p>管理历史问题与当前聊天上下文</p>
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-mark">AI</div>
+        <div className="sidebar-brand-copy">
+          <strong>AI Workspace</strong>
+          <span>Conversations</span>
+        </div>
       </div>
 
       <button className="new-chat-button" onClick={onNewSession}>
-        <span className="new-chat-icon">+</span>
         <span>新建会话</span>
       </button>
 
@@ -80,8 +80,8 @@ export function Sidebar({
         <span className="session-search-icon" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"
-            width="16"
-            height="16"
+            width="15"
+            height="15"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -96,14 +96,11 @@ export function Sidebar({
           className="session-search"
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
-          placeholder="搜索会话"
+          placeholder="搜索会话..."
         />
       </div>
 
-      <div className="session-list-header">
-        <span>最近会话</span>
-        <strong>{filteredSessions.length}</strong>
-      </div>
+      <div className="session-section-label">Recent Chats</div>
 
       <div className="session-list">
         {filteredSessions.length === 0 ? (
@@ -119,8 +116,6 @@ export function Sidebar({
                   session.id === activeSessionId ? "active" : ""
                 }`}
               >
-                <span className="session-accent" aria-hidden="true" />
-
                 {isEditing ? (
                   <input
                     className="session-edit-input"
@@ -164,6 +159,66 @@ export function Sidebar({
             );
           })
         )}
+      </div>
+
+      <div className="sidebar-footer">
+        <button className="sidebar-footer-link">
+          <span className="sidebar-footer-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4" />
+              <path d="M12 17h.01" />
+            </svg>
+          </span>
+          <span>Help</span>
+        </button>
+        <button className="sidebar-footer-link">
+          <span className="sidebar-footer-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18h6" />
+              <path d="M10 22h4" />
+              <path d="M12 2a7 7 0 0 0-4 12.75A4 4 0 0 1 9.5 18h5a4 4 0 0 1 1.5-3.25A7 7 0 0 0 12 2Z" />
+              <path d="M9 10a3 3 0 0 1 6 0c0 1.5-1 2.2-2 2.8" />
+            </svg>
+          </span>
+          <span>Support</span>
+        </button>
+        <button className="sidebar-footer-link">
+          <span className="sidebar-footer-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+            </svg>
+          </span>
+          <span>Settings</span>
+        </button>
       </div>
     </aside>
   );

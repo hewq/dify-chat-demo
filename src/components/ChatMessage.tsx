@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 import type { Source } from "../types/chat";
 import { SourceList } from "./SourceList";
 
@@ -20,6 +20,10 @@ function stripThinkContent(content: string) {
 export function ChatMessage({ role, content, sources }: ChatMessageProps) {
   const isUser = role === "user";
   const displayContent = isUser ? content : stripThinkContent(content);
+  const timeLabel = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date());
 
   return (
     <div className={`message-row ${isUser ? "message-row-user" : ""}`}>
@@ -35,35 +39,45 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 3v3" />
-            <rect x="5" y="8" width="14" height="10" rx="3" />
-            <path d="M9 8V7a3 3 0 0 1 6 0v1" />
-            <path d="M8 18v2" />
-            <path d="M16 18v2" />
-            <path d="M9 12h.01" />
-            <path d="M15 12h.01" />
-            <path d="M9 15h6" />
+            <rect x="4" y="7" width="16" height="11" rx="2.5" />
+            <path d="M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7" />
+            <path d="M4 11.5h16" />
+            <path d="M9.5 11.5v2" />
+            <path d="M14.5 11.5v2" />
+            <path d="M8.5 15.5h7" />
+            <path d="M11 9.5h2" />
           </svg>
         </div>
       )}
-      <div className={`message-bubble ${isUser ? "user" : "assistant"}`}>
-        {isUser ? (
-          <div className="message-text">{displayContent}</div>
-        ) : (
-          <div className="markdown-body">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-            >
-              {displayContent}
-            </ReactMarkdown>
+
+      <div className={`message-stack ${isUser ? "user" : "assistant"}`}>
+        {!isUser && (
+          <div className="message-meta-bar">
+            <span className="message-chip blue">DEEPSEEK-V3</span>
+            <span className="message-chip green">PROCESSING</span>
           </div>
         )}
 
-        {!isUser && sources && sources.length > 0 && (
-          <SourceList sources={sources} />
-        )}
+        <div className={`message-bubble ${isUser ? "user" : "assistant"}`}>
+          {isUser ? (
+            <div className="message-text">{displayContent}</div>
+          ) : (
+            <div className="markdown-body">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {displayContent}
+              </ReactMarkdown>
+            </div>
+          )}
+
+          {!isUser && sources && sources.length > 0 && (
+            <SourceList sources={sources} />
+          )}
+        </div>
       </div>
+
       {isUser && (
         <div className="message-avatar user" aria-hidden="true">
           <svg
@@ -76,8 +90,9 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
-            <path d="M5 20a7 7 0 0 1 14 0" />
+            <circle cx="12" cy="8.5" r="3.2" />
+            <path d="M6.5 18.5c.9-2.7 3-4 5.5-4s4.6 1.3 5.5 4" />
+            <path d="M5 19h14" />
           </svg>
         </div>
       )}

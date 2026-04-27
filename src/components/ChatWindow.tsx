@@ -9,12 +9,10 @@ type ChatWindowProps = {
 };
 
 function hasVisibleAssistantContent(content: string) {
-  return (
-    content
-      .replace(/<think>[\s\S]*?<\/think>/gi, "")
-      .replace(/<think>[\s\S]*$/gi, "")
-      .trim().length > 0
-  );
+  return content
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<think>[\s\S]*$/gi, "")
+    .trim().length > 0;
 }
 
 export function ChatWindow({
@@ -39,17 +37,19 @@ export function ChatWindow({
 
   return (
     <div className="chat-window">
-      {visibleMessages.map((message, index) => (
-        <ChatMessage
-          key={index}
-          role={message.role}
-          content={message.content}
-          sources={message.sources}
-        />
-      ))}
-      {loading && !currentAssistantHasContent && (
-        <div className="typing">AI 正在生成回复...</div>
-      )}
+      <div className="chat-window-inner">
+        {visibleMessages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            role={message.role}
+            content={message.content}
+            sources={message.sources}
+          />
+        ))}
+        {loading && !currentAssistantHasContent && (
+          <div className="typing">AI 正在生成回复...</div>
+        )}
+      </div>
     </div>
   );
 }
