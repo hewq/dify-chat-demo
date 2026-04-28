@@ -3,7 +3,7 @@ import { ChatInput } from './components/ChatInput'
 import { ChatWindow } from './components/ChatWindow'
 import { Sidebar } from './components/Sidebar'
 import { useChatSessions } from './hooks/useChatSessions'
-import { useDifyStreamChat } from './hooks/useDifyStreamChat'
+import { useDifyBlockingChat } from './hooks/useDifyBlockingChat'
 import './index.css'
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
     conversationIdRef.current = conversationId
   }, [messages, conversationId])
 
-  const { loading, send, stop } = useDifyStreamChat({
+  const { loading, send, stop } = useDifyBlockingChat({
     getMessages: () => messagesRef.current,
     getConversationId: () => conversationIdRef.current,
     setMessages: setActiveMessages,
