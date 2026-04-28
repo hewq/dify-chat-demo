@@ -32,8 +32,14 @@ chatRouter.post("/chat", async (req, res) => {
 chatRouter.post("/chat/stream", async (req, res) => {
   const controller = new AbortController();
 
-  req.on("close", () => {
+  req.on("aborted", () => {
     controller.abort();
+  });
+
+  res.on("close", () => {
+    if (!res.writableEnded) {
+      controller.abort();
+    }
   });
 
   try {
@@ -52,6 +58,7 @@ chatRouter.post("/chat/stream", async (req, res) => {
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
 
     const reader = difyResponse.body!.getReader();
     const decoder = new TextDecoder();
