@@ -98,8 +98,8 @@ export function EmptyState({ onExampleClick }: EmptyStateProps) {
         <div className="empty-state-icon" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"
-            width="34"
-            height="34"
+            width="54"
+            height="54"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.9"
