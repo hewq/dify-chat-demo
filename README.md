@@ -40,37 +40,46 @@ Knowledge Retrieval + DeepSeek
 ## 本地启动
 
 ### 1. 安装依赖
+
 ```bash
 npm install
 ```
 
-
 ### 2. 配置环境变量
+
 复制 .env.example 为 .env：
+
 ```bash
 cp .env.example .env
 ```
 
 然后填写：
+
 ```env
 DIFY_API_KEY=your_dify_app_api_key
 DIFY_API_URL=https://api.dify.ai/v1/chat-messages
 ```
 
 ### 3. 启动项目
+
 ```bash
 npm run dev:all
 ```
+
 前端地址：
+
 ```
 http://localhost:5173
 ```
+
 后端代理：
+
 ```
 http://localhost:3001
 ```
 
 ## 核心流程
+
 1. 用户在前端输入问题
 2. 前端请求 `/api/chat/stream`
 3. Express 服务端携带 Dify API Key 调用 Dify
@@ -80,6 +89,7 @@ http://localhost:3001
 7. 回答完成后展示引用来源
 
 ## 后续计划
+
 - 支持会话列表
 - 支持历史记录持久化
 - 支持用户登录
@@ -87,3 +97,14 @@ http://localhost:3001
 - 支持知识库管理
 - 支持回答反馈
 - 支持前端监控和错误上报
+
+## 服务端设计
+
+项目使用 Express 作为 BFF 层，用于隐藏 Dify API Key，并统一处理 Dify 请求、流式响应转发和错误处理。
+
+服务端按职责拆分为：
+
+- `config/env.ts`：环境变量校验
+- `routes/chat.ts`：聊天接口
+- `services/dify.ts`：Dify API 调用
+- `utils/errors.ts`：错误响应
