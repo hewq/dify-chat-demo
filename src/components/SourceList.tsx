@@ -1,15 +1,18 @@
-import type { Source } from "../types/chat";
+import type { Source } from '../types/chat'
 
 type SourceListProps = {
-  sources: Source[];
-};
+  sources: Source[]
+}
 
 export function SourceList({ sources }: SourceListProps) {
   const uniqueSources = Array.from(
     new Map(
-      sources.map((source) => [source.documentName || `unknown-${source.content}`, source]),
-    ).values(),
-  );
+      sources.map((source) => [
+        source.documentName || `unknown-${source.content}`,
+        source,
+      ])
+    ).values()
+  )
 
   return (
     <div className="source-list">
@@ -17,10 +20,10 @@ export function SourceList({ sources }: SourceListProps) {
       <ul>
         {uniqueSources.map((source, index) => (
           <li key={`${source.documentName}-${index}`}>
-            <span>{source.documentName || "未知文档"}</span>
+            <span>{source.documentName || '未知文档'}</span>
           </li>
         ))}
       </ul>
     </div>
-  );
+  )
 }

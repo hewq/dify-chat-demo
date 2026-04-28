@@ -1,11 +1,11 @@
 type ChatInputProps = {
-  value: string;
-  loading: boolean;
-  onChange: (value: string) => void;
-  onSend: () => void;
-  onClear: () => void;
-  onStop: () => void;
-};
+  value: string
+  loading: boolean
+  onChange: (value: string) => void
+  onSend: () => void
+  onClear: () => void
+  onStop: () => void
+}
 
 export function ChatInput({
   value,
@@ -37,9 +37,9 @@ export function ChatInput({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              onSend();
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault()
+              onSend()
             }
           }}
           placeholder="输入您的问题，例如：如何优化 React 渲染性能？"
@@ -75,5 +75,5 @@ export function ChatInput({
         </div>
       </div>
     </div>
-  );
+  )
 }

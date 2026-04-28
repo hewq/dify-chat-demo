@@ -1,18 +1,20 @@
-import type { Message } from "../types/chat";
-import { ChatMessage } from "./ChatMessage";
-import { EmptyState } from "./EmptyState";
+import type { Message } from '../types/chat'
+import { ChatMessage } from './ChatMessage'
+import { EmptyState } from './EmptyState'
 
 type ChatWindowProps = {
-  messages: Message[];
-  loading: boolean;
-  onExampleClick: (question: string) => void;
-};
+  messages: Message[]
+  loading: boolean
+  onExampleClick: (question: string) => void
+}
 
 function hasVisibleAssistantContent(content: string) {
-  return content
-    .replace(/<think>[\s\S]*?<\/think>/gi, "")
-    .replace(/<think>[\s\S]*$/gi, "")
-    .trim().length > 0;
+  return (
+    content
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/<think>[\s\S]*$/gi, '')
+      .trim().length > 0
+  )
 }
 
 export function ChatWindow({
@@ -22,17 +24,17 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const visibleMessages = messages.filter(
     (message) =>
-      message.role === "user" || hasVisibleAssistantContent(message.content),
-  );
+      message.role === 'user' || hasVisibleAssistantContent(message.content)
+  )
   const lastAssistantMessage = [...messages]
     .reverse()
-    .find((message) => message.role === "assistant");
+    .find((message) => message.role === 'assistant')
   const currentAssistantHasContent = lastAssistantMessage
     ? hasVisibleAssistantContent(lastAssistantMessage.content)
-    : false;
+    : false
 
   if (messages.length === 0) {
-    return <EmptyState onExampleClick={onExampleClick} />;
+    return <EmptyState onExampleClick={onExampleClick} />
   }
 
   return (
@@ -51,5 +53,5 @@ export function ChatWindow({
         )}
       </div>
     </div>
-  );
+  )
 }

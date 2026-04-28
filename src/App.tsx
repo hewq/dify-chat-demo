@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
-import { ChatInput } from "./components/ChatInput";
-import { ChatWindow } from "./components/ChatWindow";
-import { Sidebar } from "./components/Sidebar";
-import { useChatSessions } from "./hooks/useChatSessions";
-import { useDifyStreamChat } from "./hooks/useDifyStreamChat";
-import "./index.css";
+import { useEffect, useRef, useState } from 'react'
+import { ChatInput } from './components/ChatInput'
+import { ChatWindow } from './components/ChatWindow'
+import { Sidebar } from './components/Sidebar'
+import { useChatSessions } from './hooks/useChatSessions'
+import { useDifyStreamChat } from './hooks/useDifyStreamChat'
+import './index.css'
 
 function App() {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('')
 
   const {
     sessions,
@@ -21,46 +21,48 @@ function App() {
     deleteSession,
     renameSession,
     clearActiveSession,
-  } = useChatSessions();
+  } = useChatSessions()
 
-  const messagesRef = useRef(messages);
-  const conversationIdRef = useRef(conversationId);
+  const messagesRef = useRef(messages)
+  const conversationIdRef = useRef(conversationId)
 
-  messagesRef.current = messages;
-  conversationIdRef.current = conversationId;
+  useEffect(() => {
+    messagesRef.current = messages
+    conversationIdRef.current = conversationId
+  }, [messages, conversationId])
 
   const { loading, send, stop } = useDifyStreamChat({
     getMessages: () => messagesRef.current,
     getConversationId: () => conversationIdRef.current,
     setMessages: setActiveMessages,
     setConversationId: setActiveConversationId,
-  });
+  })
 
   function handleSend(question?: string) {
-    const text = question ?? input;
+    const text = question ?? input
 
-    setInput("");
-    send(text);
+    setInput('')
+    send(text)
   }
 
   function handleSelectSession(sessionId: string) {
-    if (loading) return;
-    selectSession(sessionId);
+    if (loading) return
+    selectSession(sessionId)
   }
 
   function handleDeleteSession(sessionId: string) {
-    if (loading) return;
-    deleteSession(sessionId);
+    if (loading) return
+    deleteSession(sessionId)
   }
 
   function handleNewSession() {
-    if (loading) return;
-    createSession();
+    if (loading) return
+    createSession()
   }
 
   function handleClear() {
-    if (loading) return;
-    clearActiveSession();
+    if (loading) return
+    clearActiveSession()
   }
 
   return (
@@ -101,7 +103,7 @@ function App() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

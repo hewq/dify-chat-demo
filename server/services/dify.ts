@@ -1,24 +1,24 @@
-import { env } from "../config/env";
-import type { DifyBlockingResponse } from "../types/dify";
+import { env } from '../config/env'
+import type { DifyBlockingResponse } from '../types/dify'
 
 type SendBlockingParams = {
-  message: string;
-  conversationId?: string;
-};
+  message: string
+  conversationId?: string
+}
 
 type SendStreamingParams = {
-  message: string;
-  conversationId?: string;
-  signal?: AbortSignal;
-};
+  message: string
+  conversationId?: string
+  signal?: AbortSignal
+}
 
 function createDifyBody(message: string, conversationId?: string) {
   return {
     inputs: {},
     query: message,
-    conversation_id: conversationId || "",
+    conversation_id: conversationId || '',
     user: env.difyUser,
-  };
+  }
 }
 
 export async function sendDifyBlocking({
@@ -26,23 +26,23 @@ export async function sendDifyBlocking({
   conversationId,
 }: SendBlockingParams): Promise<DifyBlockingResponse> {
   const response = await fetch(env.difyApiUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${env.difyApiKey}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       ...createDifyBody(message, conversationId),
-      response_mode: "blocking",
+      response_mode: 'blocking',
     }),
-  });
+  })
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Dify request failed: ${errorText}`);
+    const errorText = await response.text()
+    throw new Error(`Dify request failed: ${errorText}`)
   }
 
-  return response.json() as Promise<DifyBlockingResponse>;
+  return response.json() as Promise<DifyBlockingResponse>
 }
 
 export async function sendDifyStreaming({
@@ -51,22 +51,22 @@ export async function sendDifyStreaming({
   signal,
 }: SendStreamingParams) {
   const response = await fetch(env.difyApiUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${env.difyApiKey}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     signal,
     body: JSON.stringify({
       ...createDifyBody(message, conversationId),
-      response_mode: "streaming",
+      response_mode: 'streaming',
     }),
-  });
+  })
 
   if (!response.ok || !response.body) {
-    const errorText = await response.text();
-    throw new Error(`Dify stream request failed: ${errorText}`);
+    const errorText = await response.text()
+    throw new Error(`Dify stream request failed: ${errorText}`)
   }
 
-  return response;
+  return response
 }

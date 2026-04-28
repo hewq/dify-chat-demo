@@ -1,81 +1,117 @@
 type EmptyStateProps = {
-  onExampleClick: (example: string) => void;
-};
+  onExampleClick: (example: string) => void
+}
 
 type ExampleCard = {
-  label: string;
-  title: string;
-  description: string;
-  icon: "search" | "gauge" | "compass" | "code";
-};
+  label: string
+  title: string
+  description: string
+  icon: 'search' | 'gauge' | 'compass' | 'code'
+}
 
 const examples: ExampleCard[] = [
   {
-    label: "Exploration",
-    title: "什么是 RAG?",
-    description: "了解检索增强生成如何通过您的专有文档库提升 AI 准确度。",
-    icon: "search",
+    label: 'Exploration',
+    title: '什么是 RAG?',
+    description: '了解检索增强生成如何通过您的专有文档库提升 AI 准确度。',
+    icon: 'search',
   },
   {
-    label: "Performance",
-    title: "如何优化 React 性能?",
-    description: "探讨 memoization、代码分割和虚拟列表等现代前端优化策略。",
-    icon: "gauge",
+    label: 'Performance',
+    title: '如何优化 React 性能?',
+    description: '探讨 memoization、代码分割和虚拟列表等现代前端优化策略。',
+    icon: 'gauge',
   },
   {
-    label: "Architecture",
-    title: "前端架构建议",
-    description: "关于微前端、状态管理选型以及领域驱动设计的深度探讨。",
-    icon: "compass",
+    label: 'Architecture',
+    title: '前端架构建议',
+    description: '关于微前端、状态管理选型以及领域驱动设计的深度探讨。',
+    icon: 'compass',
   },
   {
-    label: "Debugging",
-    title: "代码质量审查",
-    description: "粘贴一段代码，让我为您分析潜在的 Bug 和改进空间。",
-    icon: "code",
+    label: 'Debugging',
+    title: '代码质量审查',
+    description: '粘贴一段代码，让我为您分析潜在的 Bug 和改进空间。',
+    icon: 'code',
   },
-];
+]
 
-function ExampleIcon({ icon }: { icon: ExampleCard["icon"] }) {
-  if (icon === "search") {
+function ExampleIcon({ icon }: { icon: ExampleCard['icon'] }) {
+  if (icon === 'search') {
     return (
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" />
         <path d="M11 8v6" />
         <path d="M8 11h6" />
       </svg>
-    );
+    )
   }
 
-  if (icon === "gauge") {
+  if (icon === 'gauge') {
     return (
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M12 14 15.5 10.5" />
         <path d="M20 14a8 8 0 1 0-16 0" />
         <path d="M6 18h12" />
       </svg>
-    );
+    )
   }
 
-  if (icon === "compass") {
+  if (icon === 'compass') {
     return (
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="12" r="9" />
         <path d="m16 8-2.8 6.2L7 17l2.8-6.2L16 8Z" />
       </svg>
-    );
+    )
   }
 
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M8 9h8" />
       <path d="M8 15h5" />
       <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
       <path d="m9 9-2 3 2 3" />
       <path d="m15 9 2 3-2 3" />
     </svg>
-  );
+  )
 }
 
 export function EmptyState({ onExampleClick }: EmptyStateProps) {
@@ -138,5 +174,5 @@ export function EmptyState({ onExampleClick }: EmptyStateProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -88,16 +88,6 @@ http://localhost:3001
 6. 前端逐步渲染 AI 回答
 7. 回答完成后展示引用来源
 
-## 后续计划
-
-- 支持会话列表
-- 支持历史记录持久化
-- 支持用户登录
-- 支持文件上传
-- 支持知识库管理
-- 支持回答反馈
-- 支持前端监控和错误上报
-
 ## 服务端设计
 
 项目使用 Express 作为 BFF 层，用于隐藏 Dify API Key，并统一处理 Dify 请求、流式响应转发和错误处理。
@@ -108,3 +98,23 @@ http://localhost:3001
 - `routes/chat.ts`：聊天接口
 - `services/dify.ts`：Dify API 调用
 - `utils/errors.ts`：错误响应
+
+## 代码质量
+
+项目配置了基础质量保障：
+
+- TypeScript strict mode
+- ESLint
+- Prettier
+- Husky
+- lint-staged
+- pre-commit typecheck
+
+常用命令：
+
+```bash
+npm run lint
+npm run format
+npm run typecheck
+npm run check
+```

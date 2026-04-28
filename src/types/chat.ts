@@ -1,19 +1,19 @@
 export type Message = {
-  role: "user" | "assistant";
-  content: string;
-  sources?: Source[];
-};
+  role: 'user' | 'assistant'
+  content: string
+  sources?: Source[]
+}
 
 export type ChatRequestContext = {
-  conversationId?: string;
-  user?: string;
-};
+  conversationId?: string
+  user?: string
+}
 
 export type Source = {
-  datasetName?: string;
-  documentName?: string;
-  content?: string;
-};
+  datasetName?: string
+  documentName?: string
+  content?: string
+}
 
 export type ChatSession = {
   id: string

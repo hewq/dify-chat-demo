@@ -1,22 +1,22 @@
-import { useMemo, useState } from "react";
-import type { ChatSession } from "../types/chat";
+import { useMemo, useState } from 'react'
+import type { ChatSession } from '../types/chat'
 
 type SidebarProps = {
-  sessions: ChatSession[];
-  activeSessionId?: string;
-  onNewSession: () => void;
-  onSelectSession: (sessionId: string) => void;
-  onDeleteSession: (sessionId: string) => void;
-  onRenameSession: (sessionId: string, title: string) => void;
-};
+  sessions: ChatSession[]
+  activeSessionId?: string
+  onNewSession: () => void
+  onSelectSession: (sessionId: string) => void
+  onDeleteSession: (sessionId: string) => void
+  onRenameSession: (sessionId: string, title: string) => void
+}
 
 function formatSessionTime(updatedAt: number) {
-  return new Intl.DateTimeFormat("zh-CN", {
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(updatedAt);
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(updatedAt)
 }
 
 export function Sidebar({
@@ -27,39 +27,39 @@ export function Sidebar({
   onDeleteSession,
   onRenameSession,
 }: SidebarProps) {
-  const [keyword, setKeyword] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState("");
+  const [keyword, setKeyword] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
 
   const filteredSessions = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedKeyword = keyword.trim().toLowerCase()
 
     return sessions
       .filter((session) => {
-        if (!normalizedKeyword) return true;
-        return session.title.toLowerCase().includes(normalizedKeyword);
+        if (!normalizedKeyword) return true
+        return session.title.toLowerCase().includes(normalizedKeyword)
       })
-      .sort((a, b) => b.updatedAt - a.updatedAt);
-  }, [sessions, keyword]);
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+  }, [sessions, keyword])
 
   function startEdit(session: ChatSession) {
-    setEditingId(session.id);
-    setEditingTitle(session.title);
+    setEditingId(session.id)
+    setEditingTitle(session.title)
   }
 
   function cancelEdit() {
-    setEditingId(null);
-    setEditingTitle("");
+    setEditingId(null)
+    setEditingTitle('')
   }
 
   function submitEdit(sessionId: string) {
-    const title = editingTitle.trim();
+    const title = editingTitle.trim()
 
     if (title) {
-      onRenameSession(sessionId, title);
+      onRenameSession(sessionId, title)
     }
 
-    cancelEdit();
+    cancelEdit()
   }
 
   return (
@@ -107,13 +107,13 @@ export function Sidebar({
           <div className="session-empty">没有匹配的会话</div>
         ) : (
           filteredSessions.map((session) => {
-            const isEditing = editingId === session.id;
+            const isEditing = editingId === session.id
 
             return (
               <div
                 key={session.id}
                 className={`session-item ${
-                  session.id === activeSessionId ? "active" : ""
+                  session.id === activeSessionId ? 'active' : ''
                 }`}
               >
                 {isEditing ? (
@@ -124,12 +124,12 @@ export function Sidebar({
                     onChange={(event) => setEditingTitle(event.target.value)}
                     onBlur={() => submitEdit(session.id)}
                     onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        submitEdit(session.id);
+                      if (event.key === 'Enter') {
+                        submitEdit(session.id)
                       }
 
-                      if (event.key === "Escape") {
-                        cancelEdit();
+                      if (event.key === 'Escape') {
+                        cancelEdit()
                       }
                     }}
                   />
@@ -156,7 +156,7 @@ export function Sidebar({
                   ×
                 </button>
               </div>
-            );
+            )
           })
         )}
       </div>
@@ -221,5 +221,5 @@ export function Sidebar({
         </button>
       </div>
     </aside>
-  );
+  )
 }
