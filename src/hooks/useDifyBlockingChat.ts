@@ -1,12 +1,17 @@
 import { useState } from 'react'
 import { sendMessageToVercelDify } from '../api/difyVercel'
-import type { Message } from '../types/chat'
+import type { Message, Source } from '../types/chat'
 
 type UseDifyBlockingChatOptions = {
   getMessages: () => Message[]
   getConversationId: () => string | undefined
   setMessages: (updater: (messages: Message[]) => Message[]) => void
   setConversationId: (conversationId: string | undefined) => void
+  onUserMessageCreated?: (content: string) => Promise<void>
+  onAssistantMessageCreated?: (message: {
+    content: string
+    sources?: Source[]
+  }) => Promise<void>
 }
 
 export function useDifyBlockingChat({
@@ -14,6 +19,8 @@ export function useDifyBlockingChat({
   getConversationId,
   setMessages,
   setConversationId,
+  onUserMessageCreated,
+  onAssistantMessageCreated,
 }: UseDifyBlockingChatOptions) {
   const [loading, setLoading] = useState(false)
 
@@ -28,14 +35,22 @@ export function useDifyBlockingChat({
 
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content: message },
-      { role: 'assistant', content: '' },
+      { role: 'user', content: message, createdAt: Date.now() },
+      { role: 'assistant', content: '', createdAt: Date.now() },
     ])
 
     try {
+      await onUserMessageCreated?.(message)
+
       const result = await sendMessageToVercelDify(message, getConversationId())
 
       setConversationId(result.conversationId)
+
+      const sources = result.sources?.map((source) => ({
+        datasetName: source.dataset_name,
+        documentName: source.document_name,
+        content: source.content,
+      }))
 
       setMessages((prev) => {
         const next = [...prev]
@@ -45,15 +60,16 @@ export function useDifyBlockingChat({
           next[assistantMessageIndex] = {
             ...current,
             content: result.answer,
-            sources: result.sources?.map((source) => ({
-              datasetName: source.dataset_name,
-              documentName: source.document_name,
-              content: source.content,
-            })),
+            sources,
           }
         }
 
         return next
+      })
+
+      await onAssistantMessageCreated?.({
+        content: result.answer,
+        sources,
       })
     } catch (error) {
       setMessages((prev) => {

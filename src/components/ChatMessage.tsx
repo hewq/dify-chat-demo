@@ -1,11 +1,11 @@
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
-import type { Source } from '../types/chat'
+import type { ChatRole, Source } from '../types/chat'
 import { SourceList } from './SourceList'
 
 type ChatMessageProps = {
-  role: 'user' | 'assistant'
+  role: ChatRole
   content: string
   sources?: Source[]
 }

@@ -1,9 +1,3 @@
-export type Message = {
-  role: 'user' | 'assistant'
-  content: string
-  sources?: Source[]
-}
-
 export type ChatRequestContext = {
   conversationId?: string
   user?: string
@@ -23,4 +17,15 @@ export type ChatSession = {
   createdAt: number
   updatedAt: number
   isTitleManuallyEdited?: boolean
+}
+
+export type ChatRole = 'user' | 'assistant' | 'system'
+export interface Message {
+  id?: string
+  role: ChatRole
+  content: string
+  createdAt?: number
+  updatedAt?: number
+  metadata?: unknown
+  sources?: Source[]
 }

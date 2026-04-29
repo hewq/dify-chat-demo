@@ -17,15 +17,22 @@ function hasVisibleAssistantContent(content: string) {
   )
 }
 
+function isRenderableMessage(
+  message: Message
+): message is Message & { role: 'user' | 'assistant' } {
+  return (
+    message.role === 'user' ||
+    (message.role === 'assistant' &&
+      hasVisibleAssistantContent(message.content))
+  )
+}
+
 export function ChatWindow({
   messages,
   loading,
   onExampleClick,
 }: ChatWindowProps) {
-  const visibleMessages = messages.filter(
-    (message) =>
-      message.role === 'user' || hasVisibleAssistantContent(message.content)
-  )
+  const visibleMessages = messages.filter(isRenderableMessage)
   const lastAssistantMessage = [...messages]
     .reverse()
     .find((message) => message.role === 'assistant')

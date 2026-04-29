@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
+import { createSessionMessage, updateSession } from './api/sessions'
 import { ChatInput } from './components/ChatInput'
 import { ChatWindow } from './components/ChatWindow'
 import { Sidebar } from './components/Sidebar'
 import { useChatSessions } from './hooks/useChatSessions'
-import { useDifyBlockingChat } from './hooks/useDifyBlockingChat'
+import { useDifyStreamChat } from './hooks/useDifyStreamChat'
 import './index.css'
+
+function createSessionTitle(content: string) {
+  const title = content.trim().replace(/\s+/g, ' ')
+
+  if (!title) return '新会话'
+
+  return title.length > 20 ? `${title.slice(0, 20)}...` : title
+}
 
 function App() {
   const [input, setInput] = useState('')
@@ -25,44 +34,75 @@ function App() {
 
   const messagesRef = useRef(messages)
   const conversationIdRef = useRef(conversationId)
+  const activeSessionIdRef = useRef(activeSessionId)
 
   useEffect(() => {
     messagesRef.current = messages
     conversationIdRef.current = conversationId
-  }, [messages, conversationId])
+    activeSessionIdRef.current = activeSessionId
+  }, [messages, conversationId, activeSessionId])
 
-  const { loading, send, stop } = useDifyBlockingChat({
+  const { loading, send, stop } = useDifyStreamChat({
     getMessages: () => messagesRef.current,
     getConversationId: () => conversationIdRef.current,
     setMessages: setActiveMessages,
     setConversationId: setActiveConversationId,
+    onUserMessageCreated: async (content) => {
+      const sessionId = activeSessionIdRef.current
+
+      if (!sessionId) return
+
+      await createSessionMessage(sessionId, {
+        role: 'user',
+        content,
+      })
+
+      if (messagesRef.current.length === 0) {
+        const title = createSessionTitle(content)
+
+        await updateSession(sessionId, {
+          title,
+        })
+      }
+    },
+    onAssistantMessageCreated: async ({ content, sources }) => {
+      const sessionId = activeSessionIdRef.current
+
+      if (!sessionId || !content.trim()) return
+
+      await createSessionMessage(sessionId, {
+        role: 'assistant',
+        content,
+        sources,
+      })
+    },
   })
 
   function handleSend(question?: string) {
     const text = question ?? input
 
     setInput('')
-    send(text)
+    void send(text)
   }
 
   function handleSelectSession(sessionId: string) {
     if (loading) return
-    selectSession(sessionId)
+    void selectSession(sessionId)
   }
 
   function handleDeleteSession(sessionId: string) {
     if (loading) return
-    deleteSession(sessionId)
+    void deleteSession(sessionId)
   }
 
   function handleNewSession() {
     if (loading) return
-    createSession()
+    void createSession()
   }
 
   function handleClear() {
     if (loading) return
-    clearActiveSession()
+    void clearActiveSession()
   }
 
   return (

@@ -4,6 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { env } from './config/env'
 import { chatRouter } from './routes/chat'
+import { sessionsRouter } from './routes/sessions'
 
 const app = express()
 
@@ -20,6 +21,24 @@ app.get('/health', (_req, res) => {
 })
 
 app.use('/api', chatRouter)
+app.use('/api/sessions', sessionsRouter)
+
+app.use(
+  (
+    error: unknown,
+    _req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    void next
+    console.error(error)
+
+    res.status(500).json({
+      code: 500,
+      message: '服务器内部错误',
+    })
+  }
+)
 
 const clientDistPath = path.resolve(__dirname, '../dist')
 
